@@ -1,0 +1,39 @@
+.header-container {
+  position: relative;
+  height: 100px;
+  width: 100%;
+  background-color: #87CEEB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-content: center;
+  svg {z-index: 3;}
+}
+
+.logo-container {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 0 1em;
+}
+
+.logo {
+  cursor: pointer;
+  width: clamp(200px, 40%, 200px);
+}
+
+.menu-icon {
+  position: absolute;
+  right: 1em;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 42px;
+  width: clamp(20px, 6vw, 40px);
+  transition: all 0.5s ease-in-out;
+  cursor: pointer;
+  margin-right: 0.5em;
+  color: var(--white-color);
+  padding: 0.5em;
+}
