@@ -8,6 +8,9 @@ import { useEditMenuStore } from "../../data/menuStore.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { validateInput } from "../../data/validationSchemas.js";
+import { deleteProductFromFirestore , updateMenuItemInFirestore} from "../../data/api";
+
+
 
 function MenuItem({ productItem, active }) {
   const [touchedInput, setTouchedInput] = useState({ name: false, description: false, price: false, img: false });
@@ -53,13 +56,39 @@ function MenuItem({ productItem, active }) {
       img: form.storeImg,
     });
 
+     updateMenuItemInFirestore(productItem.firestoreId, {
+      name: form.storeName,
+      description: form.storeDescription,
+      price: form.storePrice,
+      img: form.storeImg,
+    });
+
     toggleItemActive(productItem.id);
-  };
+  }
 
   const { removeProductItem } = useCartStore();
-  const handleDeleteMenuItem = () => {
+
+
+ useEffect(() => {
+  console.log("Loaded product item:", productItem);
+}, [productItem]);
+
+
+
+const handleDeleteMenuItem = async () => {
+  try {
+    console.log("Trying to delete item with ID:", productItem.id, "Type:", typeof productItem.id);
+   
+
+    await deleteProductFromFirestore(productItem.firestoreId);
+    removeProductItem(productItem.firestoreId);
     removeProductItem(productItem.id);
-  };
+  } catch (error) {
+    console.error("Failed to delete the item:", error);
+  }
+};
+
+
   const handleUrlChange = (e) => {
     const url = e.target.value;
     setForm((prev) => ({ ...prev, storeImg: url }));
@@ -111,34 +140,6 @@ function MenuItem({ productItem, active }) {
       <div className={!active ? "menu-flex" : "menu-flex edit-flex"}>
         <div>
           {active ? (
-            <>
-              <input
-                type="number"
-                value={form.storePrice}
-                onChange={(e) => setForm({ ...form, storePrice: e.target.value })}
-                className="price-input"
-                onBlur={() => setTouchedInput({ ...touchedInput, price: true })}
-              />
-              <p className="price-message">{validation.message.price}</p>
-            </>
-          ) : (
-            <p>{productItem.price} :-</p>
-          )}
-
-          {!active && (
-            <div className="cart-buttons">
-              <button onClick={() => removeFromCart(productItem)}>
-                <img src={minusImg} alt="minus icon" />
-              </button>
-              <p>{num?.quantity ?? 0}</p>
-              <button onClick={() => addToCart(productItem)}>
-                <img src={plusImg} alt="plus icon" />
-              </button>
-            </div>
-          )}
-        </div>
-
-        {active ? (
           <>
             <input
               type="url"
@@ -154,6 +155,35 @@ function MenuItem({ productItem, active }) {
           <img src={productItem.img} alt="info icon" />
           
         )}
+          {active ? (
+            <>
+              <input
+                type="number"
+                value={form.storePrice}
+                onChange={(e) => setForm({ ...form, storePrice: e.target.value })}
+                className="price-input"
+                onBlur={() => setTouchedInput({ ...touchedInput, price: true })}
+              />
+              <p className="price-message">{validation.message.price}</p>
+            </>
+          ) : (
+            <p>{productItem.price} Kr:-</p>
+          )}
+
+          {!active && (
+            <div className="cart-buttons">
+              <button onClick={() => removeFromCart(productItem)}>
+                <img src={minusImg} alt="minus icon" />
+              </button>
+              <p>{num?.quantity ?? 0}</p>
+              <button onClick={() => addToCart(productItem)}>
+                <img src={plusImg} alt="plus icon" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        
 
         <div className="button-container">
           {!active ? (
@@ -162,7 +192,7 @@ function MenuItem({ productItem, active }) {
               <span className="hover-text">edit</span>
             </button>
           ) : (
-            <button className="save-button" disabled={!validation.isFormValid} onClick={handleSaveButton}>
+            <button className="save-button" onClick={handleSaveButton}> 
               <img src={checkbox} alt="checkbox icon" />
               <span className="hover-text">save</span>
             </button>

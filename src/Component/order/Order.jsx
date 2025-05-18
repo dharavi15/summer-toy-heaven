@@ -13,6 +13,7 @@ function Order() {
     return quantity.quantity;
   }
 
+  // Clicking this div will open or close the cart.
   return (
     <div className={`cart-wrapper ${isOpen ? "open" : ""}`} onClick={() => setIsOpen(!isOpen)}>
       <button
@@ -22,38 +23,42 @@ function Order() {
           setIsOpen(!isOpen);
         }}
       >
-        {isOpen ? "Close" : "See your order here!"}
+        {isOpen ? "Close" : "See your order here!"}   {/* Button text changes based on isOpen */}
+        
       </button>
-      <div className="cart" onClick={(e) => e.stopPropagation()}>
+      <div className="cart" onClick={(e) => e.stopPropagation()}>  {/*prevents the click from closing the cart if user interacts inside */}
         <div className="cart-header">
           <p className="cart-heading">Quantity</p>
           <p className="cart-heading">Product</p>
           <p className="cart-heading">Price</p>
         </div>
 
-        <div className="cart-body">
+        <div className="cart-body"> 
           {cart.length === 0 ? (
             <div className="empty-order">
               <p>You haven't added anything yet!</p>
             </div>
           ) : (
             productDataList
+            // Filter only those products that are in the cart
               .filter((item) => cart.find((cartItem) => cartItem.id === item.id))
+               // For each filtered product, create a row in the cart
               .map((item) => (
                 <div className="cart-row" key={item.id}>
                   <div className="cart-cell">
                     <button
                       onClick={(e) => {
-                        e.stopPropagation();
+                        e.stopPropagation(); //  Stops the click from affecting parent (like closing the cart)
                         removeFromCart(item);
                       }}
                     >
                       <img className="icon" src={minusImg} alt="minus icon" />
                     </button>
+                       {/* Shows current quantity of the item */}
                     <span className="order-quantity">{findQuantity(item.id)}</span>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation();
+                        e.stopPropagation();// Stop event from bubbling up to parent
                         addToCart(item);
                       }}
                     >

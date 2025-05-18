@@ -1,14 +1,13 @@
 import { create } from "zustand";
-//import { getMenuFromAPI, saveProductDataToAPI } from "./jsonStorage";
-import { getMenuFromFirestore } from "./api"; // ✅ This is the correct import
 
-const useCartStore = create((set, get) => ({
+
+const useCartStore = create((set, get) => ({   /* set is used to update data& get to read current state*/
   cart: [],
   totalPrice: 0,
   productDataList: [],
   addProductVisible: false,
 
-  // ✅ Login state for SPA
+
   isLoggedIn: false,
   setLoginStatus: (status) => {
     localStorage.setItem("isLoggedIn", status ? "true" : "false");
@@ -16,40 +15,41 @@ const useCartStore = create((set, get) => ({
   },
 
   switchAddProductVisible: (option) => {
-    set({ addProductVisible: !!option });
+    set({ addProductVisible: !!option }); /* !!option converts any value to true or false*/
   },
 
-  setProductData: (data) => set({ productDataList: data }),
+  setProductData: (data) => set({ productDataList: data }),/*Stores the list of all available products (used on the menu page)*/
 
   addToCart: (menuOption) => {
     const { cart, totalPrice } = get();
     let product = cart.find((item) => item.id === menuOption.id);
 
-    if (product != undefined) {
-      const updatedCart = cart.map((item) =>
+    if (product != undefined) {  /* this checks whether we found a product*/
+      const updatedCart = cart.map((item) => /* map()goes through each item in the cart*/
         item.id === product.id
           ? {
-              ...item,
+              ...item, /* if finds the product adds the price and increases the quantity*/
               price: item.price + menuOption.price,
               quantity: item.quantity + 1,
             }
-          : item
+          : item  /* keeps the rest of the item’s properties unchanged*/
       );
 
       set(() => ({
-        cart: updatedCart,
+        cart: updatedCart, /* updates the cart in zuztand*/
       }));
-    } else {
+    } else {               /* If the product is not in the cart yet*/
       set((state) => ({
         cart: [
-          ...state.cart,
-          { id: menuOption.id, price: menuOption.price, quantity: 1 },
+          ...state.cart,   /* copies everything already in the cart*/
+          { id: menuOption.id, price: menuOption.price, quantity: 1 }, /*adds new product */
         ],
       }));
     }
 
     set(() => ({
-      totalPrice: setTotalPrice(totalPrice, "+", menuOption.price),
+      totalPrice: setTotalPrice(totalPrice, "+", menuOption.price),   /* updates the total cart price
+       by adding the price of the newly added item*/
     }));
   },
 
@@ -74,10 +74,10 @@ const useCartStore = create((set, get) => ({
         cart: updatedCart,
       }));
     } else {
-      const filteredCart = cart.filter((item) => item.id !== menuOption.id);
+      const filteredCart = cart.filter((item) => item.id !== menuOption.id);  /*filter() removes the item completely from the cart*/
 
       set(() => ({
-        cart: filteredCart,
+        cart: filteredCart,    
       }));
     }
 
@@ -93,9 +93,7 @@ const useCartStore = create((set, get) => ({
       productDataList: state.productDataList.filter((item) => item.id !== id),
     }));
 
-    await saveProductDataToAPI(
-      productDataList.filter((item) => item.id !== id)
-    );
+
   },
 
   updateProductItem: async (id, newData) => {
@@ -107,13 +105,7 @@ const useCartStore = create((set, get) => ({
       ),
     }));
 
-    await saveProductDataToAPI(
-      productDataList.map((item) =>
-        item.id === id
-          ? { ...item, ...newData, active: !item.active }
-          : item
-      )
-    );
+
   },
 
   addProductItem: async (item) => {
@@ -123,7 +115,7 @@ const useCartStore = create((set, get) => ({
       productDataList: [...state.productDataList, { ...item, active: false }],
     }));
 
-    await saveProductDataToAPI([...productDataList, item]);
+
   },
 
   toggleItemActive: async (id) =>
@@ -133,8 +125,6 @@ const useCartStore = create((set, get) => ({
       ),
     })),
 }));
-
-
 
 
 function setTotalPrice(totalPrice, operator, price) {
@@ -149,3 +139,5 @@ function setTotalPrice(totalPrice, operator, price) {
 }
 
 export default useCartStore;
+
+

@@ -83,13 +83,16 @@
   cursor: pointer;
   z-index: 1001;
 }
+.field-error{
+  color: #ff6b6b;
+}
 
 .error-message {
   color: #ff6b6b;
   margin-top: 1rem;
   text-align: center;
 }
-/* ✅ Mobile: 320px ta 749px */
+
 @media (max-width: 749px) {
   .admin-menu-container {
     width: 90%;
@@ -125,3 +128,4 @@
     font-size: 1rem;
   }
 }
+

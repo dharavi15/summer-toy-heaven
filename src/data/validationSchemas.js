@@ -70,7 +70,7 @@ function validateInput(Form, touchedInput) {
           message.price = "Price cannot be less than 0.";
         }
       } else if (key === "storeImg") {
-        message.img = "Enter a valid image URL for the toy.";
+        message.img = "Enter a valid image URL for the toy..";
       }
     });
   }
